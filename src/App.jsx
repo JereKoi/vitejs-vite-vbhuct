@@ -14,9 +14,14 @@ const App = () => {
 
   useEffect(() => {
     personService.getAll().then((initialPersons) => {
-      setPersons(initialPersons);
+      const personsWithId = initialPersons.map(person => ({
+        ...person,
+        id: person._id // Convert _id to id
+      }));
+      setPersons(personsWithId);
     });
   }, []);
+  
 
   const handleNameChange = (event) => {
     setNewName(event.target.value);
@@ -68,14 +73,17 @@ const App = () => {
     } else {
       const newPerson = { name: newName, number: newNumber };
       personService.create(newPerson).then((returnedPerson) => {
-        setPersons([...persons, returnedPerson]);
+        console.log('New person added:', returnedPerson); // Debugging
+        const personWithId = { ...returnedPerson, id: returnedPerson._id }; // Ensure id is correctly set
+        setPersons([...persons, personWithId]);
         setNewName('');
         setNewNumber('');
-        setNotification(`${returnedPerson.name} added`);
+        setNotification(`${personWithId.name} added`);
         setTimeout(() => {
           setNotification(null);
         }, 5000);
       });
+      
     }
   };
 
